@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { Task } from "@/types";
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -41,11 +42,6 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogout = () => {
-    auth.logout();
-    router.push("/");
-  };
-
   const getStatusVariant = (status: string) => {
     switch (status) {
       case "COMPLETED":
@@ -77,48 +73,19 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <Loading message="Loading your tasks..." size="lg" />
-      </div>
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <Loading message="Loading your tasks..." size="lg" />
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md shadow-sm border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 animate-fade-in">
-                Task Dashboard
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Manage your tasks efficiently
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Welcome back,</p>
-                <p className="text-sm font-medium text-gray-900">
-                  {auth.getUser()?.email}
-                </p>
-              </div>
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                className="border-red-300 text-red-600 hover:bg-red-50"
-              >
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <DashboardLayout>
+      <div className="space-y-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card
             className="card-hover animate-fade-in"
             style={{ animationDelay: "0.1s" }}
@@ -126,14 +93,15 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
+                  <p className="text-sm font-medium text-gray-600 mb-1">
                     Total Tasks
                   </p>
                   <p className="text-3xl font-bold text-gray-900">
                     {taskStats.total}
                   </p>
+                  <p className="text-xs text-gray-500 mt-1">All tasks</p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                   <span className="text-2xl">📋</span>
                 </div>
               </div>
@@ -147,12 +115,15 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Completed</p>
+                  <p className="text-sm font-medium text-gray-600 mb-1">
+                    Completed
+                  </p>
                   <p className="text-3xl font-bold text-green-600">
                     {taskStats.completed}
                   </p>
+                  <p className="text-xs text-gray-500 mt-1">Done</p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                   <span className="text-2xl">✅</span>
                 </div>
               </div>
@@ -166,14 +137,15 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
+                  <p className="text-sm font-medium text-gray-600 mb-1">
                     In Progress
                   </p>
                   <p className="text-3xl font-bold text-yellow-600">
                     {taskStats.inProgress}
                   </p>
+                  <p className="text-xs text-gray-500 mt-1">Working</p>
                 </div>
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
                   <span className="text-2xl">🔄</span>
                 </div>
               </div>
@@ -187,12 +159,15 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Pending</p>
+                  <p className="text-sm font-medium text-gray-600 mb-1">
+                    Pending
+                  </p>
                   <p className="text-3xl font-bold text-gray-600">
                     {taskStats.pending}
                   </p>
+                  <p className="text-xs text-gray-500 mt-1">To do</p>
                 </div>
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
                   <span className="text-2xl">⏳</span>
                 </div>
               </div>
@@ -200,52 +175,51 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Filters and Search */}
-        <Card
-          className="mb-6 animate-fade-in"
-          style={{ animationDelay: "0.5s" }}
-        >
-          <CardContent className="p-6">
-            <div className="flex flex-col lg:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search tasks by title..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-gray-400">🔍</span>
+        {/* Actions and Filters */}
+        <div className="flex flex-col lg:flex-row gap-4">
+          <Card className="flex-1">
+            <CardContent className="p-6">
+              <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search tasks by title..."
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-400">🔍</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="lg:w-48">
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                <div className="lg:w-48">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                  </select>
+                </div>
+                <Button
+                  onClick={() => router.push("/tasks/new")}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl"
                 >
-                  <option value="all">All Status</option>
-                  <option value="PENDING">Pending</option>
-                  <option value="IN_PROGRESS">In Progress</option>
-                  <option value="COMPLETED">Completed</option>
-                </select>
+                  <span className="mr-2">+</span>
+                  New Task
+                </Button>
               </div>
-              <Button
-                onClick={() => router.push("/tasks/new")}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
-              >
-                <span className="mr-2">+</span>
-                Add Task
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
         {error && (
-          <div className="mb-4 bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded-lg animate-fade-in">
+          <div className="bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded-lg animate-fade-in">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg
@@ -269,11 +243,19 @@ export default function DashboardPage() {
 
         {/* Tasks List */}
         <Card className="animate-fade-in" style={{ animationDelay: "0.6s" }}>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>Tasks</span>
+              <span className="text-sm font-normal text-gray-500">
+                {tasks.length} task{tasks.length !== 1 ? "s" : ""}
+              </span>
+            </CardTitle>
+          </CardHeader>
           <CardContent className="p-0">
             {tasks.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-gray-400 text-5xl mb-4">📋</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <div className="text-center py-16">
+                <div className="text-gray-400 text-6xl mb-4">📋</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   No tasks found
                 </h3>
                 <p className="text-gray-600 mb-6">
@@ -298,10 +280,10 @@ export default function DashboardPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center space-x-3 mb-2">
-                            <span className="text-lg">
+                            <span className="text-xl">
                               {getStatusIcon(task.status)}
                             </span>
-                            <h3 className="text-lg font-medium text-gray-900 truncate">
+                            <h3 className="text-lg font-semibold text-gray-900 truncate">
                               {task.title}
                             </h3>
                             <Badge variant={getStatusVariant(task.status)}>
@@ -347,6 +329,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
