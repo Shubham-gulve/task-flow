@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { api } from "@/lib/api";
 import { Task } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Loading } from "@/components/ui/Loading";
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -42,25 +46,25 @@ export default function DashboardPage() {
     router.push("/");
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusVariant = (status: string) => {
     switch (status) {
       case "COMPLETED":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "completed";
       case "IN_PROGRESS":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        return "progress";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "pending";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "COMPLETED":
-        return "✓";
+        return "✅";
       case "IN_PROGRESS":
-        return "⟳";
+        return "🔄";
       default:
-        return "○";
+        return "⏳";
     }
   };
 
@@ -74,10 +78,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Loading your tasks...</p>
-        </div>
+        <Loading message="Loading your tasks..." size="lg" />
       </div>
     );
   }
@@ -85,11 +86,11 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-white/80 backdrop-blur-md shadow-sm border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900 animate-fade-in">
                 Task Dashboard
               </h1>
               <p className="text-gray-600 mt-1">
@@ -103,12 +104,13 @@ export default function DashboardPage() {
                   {auth.getUser()?.email}
                 </p>
               </div>
-              <button
+              <Button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
+                variant="outline"
+                className="border-red-300 text-red-600 hover:bg-red-50"
               >
-                <span>Logout</span>
-              </button>
+                Logout
+              </Button>
             </div>
           </div>
         </div>
@@ -117,186 +119,233 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-blue-100 rounded-lg p-3">
-                <span className="text-blue-600 text-xl font-bold">
-                  {taskStats.total}
-                </span>
+          <Card
+            className="card-hover animate-fade-in"
+            style={{ animationDelay: "0.1s" }}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    Total Tasks
+                  </p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {taskStats.total}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <span className="text-2xl">📋</span>
+                </div>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Tasks</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {taskStats.total}
-                </p>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-green-100 rounded-lg p-3">
-                <span className="text-green-600 text-xl">✓</span>
+          <Card
+            className="card-hover animate-fade-in"
+            style={{ animationDelay: "0.2s" }}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Completed</p>
+                  <p className="text-3xl font-bold text-green-600">
+                    {taskStats.completed}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <span className="text-2xl">✅</span>
+                </div>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Completed</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {taskStats.completed}
-                </p>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-yellow-100 rounded-lg p-3">
-                <span className="text-yellow-600 text-xl">⟳</span>
+          <Card
+            className="card-hover animate-fade-in"
+            style={{ animationDelay: "0.3s" }}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">
+                    In Progress
+                  </p>
+                  <p className="text-3xl font-bold text-yellow-600">
+                    {taskStats.inProgress}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                  <span className="text-2xl">🔄</span>
+                </div>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">In Progress</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {taskStats.inProgress}
-                </p>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 bg-gray-100 rounded-lg p-3">
-                <span className="text-gray-600 text-xl">○</span>
+          <Card
+            className="card-hover animate-fade-in"
+            style={{ animationDelay: "0.4s" }}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Pending</p>
+                  <p className="text-3xl font-bold text-gray-600">
+                    {taskStats.pending}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <span className="text-2xl">⏳</span>
+                </div>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-gray-600">
-                  {taskStats.pending}
-                </p>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow mb-6 p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search tasks by title..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-400">🔍</span>
+        <Card
+          className="mb-6 animate-fade-in"
+          style={{ animationDelay: "0.5s" }}
+        >
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search tasks by title..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-gray-400">🔍</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="lg:w-48">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              <div className="lg:w-48">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="all">All Status</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="COMPLETED">Completed</option>
+                </select>
+              </div>
+              <Button
+                onClick={() => router.push("/tasks/new")}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
               >
-                <option value="all">All Status</option>
-                <option value="PENDING">Pending</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="COMPLETED">Completed</option>
-              </select>
+                <span className="mr-2">+</span>
+                Add Task
+              </Button>
             </div>
-            <button
-              onClick={() => router.push("/tasks/new")}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
-            >
-              <span>+</span>
-              <span>Add Task</span>
-            </button>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {error}
+          <div className="mb-4 bg-red-50 border-l-4 border-red-400 text-red-700 px-4 py-3 rounded-lg animate-fade-in">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm">{error}</p>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Tasks List */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          {tasks.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-gray-400 text-5xl mb-4">📋</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No tasks found
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Get started by creating your first task!
-              </p>
-              <button
-                onClick={() => router.push("/tasks/new")}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Create Your First Task
-              </button>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-200">
-              {tasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="hover:bg-gray-50 transition-colors"
+        <Card className="animate-fade-in" style={{ animationDelay: "0.6s" }}>
+          <CardContent className="p-0">
+            {tasks.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-5xl mb-4">📋</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No tasks found
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Get started by creating your first task!
+                </p>
+                <Button
+                  onClick={() => router.push("/tasks/new")}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
                 >
-                  <div className="px-6 py-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <span
-                            className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${getStatusColor(task.status)}`}
-                          >
-                            {getStatusIcon(task.status)}
-                          </span>
-                          <h3 className="text-lg font-medium text-gray-900 truncate">
-                            {task.title}
-                          </h3>
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-                              task.status,
-                            )}`}
-                          >
-                            {task.status.replace("_", " ")}
-                          </span>
-                        </div>
-                        {task.description && (
-                          <p className="text-sm text-gray-600 mb-2 line-clamp-2">
-                            {task.description}
+                  Create Your First Task
+                </Button>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200">
+                {tasks.map((task, index) => (
+                  <div
+                    key={task.id}
+                    className="hover:bg-gray-50 transition-colors animate-fade-in"
+                    style={{ animationDelay: `${0.7 + index * 0.1}s` }}
+                  >
+                    <div className="px-6 py-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <span className="text-lg">
+                              {getStatusIcon(task.status)}
+                            </span>
+                            <h3 className="text-lg font-medium text-gray-900 truncate">
+                              {task.title}
+                            </h3>
+                            <Badge variant={getStatusVariant(task.status)}>
+                              {task.status.replace("_", " ")}
+                            </Badge>
+                          </div>
+                          {task.description && (
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                              {task.description}
+                            </p>
+                          )}
+                          <p className="text-xs text-gray-400">
+                            Created{" "}
+                            {new Date(task.createdAt).toLocaleDateString()}
                           </p>
-                        )}
-                        <p className="text-xs text-gray-400">
-                          Created{" "}
-                          {new Date(task.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex items-center space-x-2 ml-4">
-                        <button
-                          onClick={() => router.push(`/tasks/${task.id}/edit`)}
-                          className="text-blue-600 hover:text-blue-900 font-medium text-sm"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => router.push(`/tasks/${task.id}`)}
-                          className="text-gray-600 hover:text-gray-900 font-medium text-sm"
-                        >
-                          View
-                        </button>
+                        </div>
+                        <div className="flex items-center space-x-2 ml-4">
+                          <Button
+                            onClick={() =>
+                              router.push(`/tasks/${task.id}/edit`)
+                            }
+                            variant="ghost"
+                            size="sm"
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            onClick={() => router.push(`/tasks/${task.id}`)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-gray-600 hover:text-gray-900"
+                          >
+                            View
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
